@@ -7,7 +7,7 @@ const dbname = "skoolbag";
 const url = "mongodb+srv://divya:divya@cluster0.ukgyf.mongodb.net/skoolbag?retryWrites=true&w=majority";
 
 // Options for mongoDB
-const mongoOptions = {useNewUrlParser : true};
+const mongoOptions = {useNewUrlParser : true,useUnifiedTopology: true};
 
 const state = {
     db : null,

@@ -4,7 +4,7 @@ var SchoolSchema = new mongoose.Schema({
     address:{
         street:String,
         suburb:String,
-        postcode:String,
+        postcode:Number,
         state:String,
     },
     noOfStudents: Number,
