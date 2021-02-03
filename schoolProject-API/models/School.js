@@ -1,3 +1,5 @@
+/*  This file is used to define the the model of the school data structure */
+
 var mongoose = require('mongoose');
 var SchoolSchema = new mongoose.Schema({
     schoolName: String,

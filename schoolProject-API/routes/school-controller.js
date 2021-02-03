@@ -1,34 +1,17 @@
-const express = require('express');
+/*  This file handles the Inserting and Retrieving operations of schools to / from database  */
 
+const express = require('express');
 const Joi = require('@hapi/joi');
-// const Joi = require('joi');
-const db = require("../Repository/db-config");
+const validation_schema = require ('../helpers/validating_schemas');
+const db = require("../helpers/db-config");
 var router = express.Router();
 var bodyParser = require('body-parser');
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
-let mongo = require('mongodb');
-const axios = require('axios');
-
-
-
-/* Address Validation Schema. */
-const addressSchema = Joi.object().keys({
-  street:Joi.string().required(),
-  suburb:Joi.string().required(),
-  postcode:Joi.number().required(),
-  state:Joi.string().required(),
-});
-/* School Validation Schema. */
-const schoolSchema = Joi.object().keys({
-  schoolName: Joi.string().required(),
-  noOfStudents: Joi.number().required(),
-  address: addressSchema
-});
-
 
 const School = require("../models/School");
 const schoolCollection = "schools";
+
 
 /* GET  school listing. */
 router.get('/list',(req,res)=>{
@@ -69,18 +52,18 @@ router.get('/list',(req,res)=>{
   });
 });
 
-
+/* POST a new school. */
 router.post('/add', (req, res) => {
 
-  // Payload from the request
+  /* Payload sent from client */
   let data = req.body;
 
   console.log("request data : ", data);
 
-  const validation = schoolSchema.validate(data);
+  const validation = validation_schema.schoolSchema.validate(data);
 
   if (!validation.error) {
-
+        /* If no validation errors ,proceed with POST operation */
        let school = new School();
 
         school.schoolName = data.schoolName;
@@ -90,7 +73,7 @@ router.post('/add', (req, res) => {
         school.address.state = data.address.state;
         school.noOfStudents = data.noOfStudents;
 
-        // Inserting into DB
+        /* Inserting into DB */
         db.getDB().collection(schoolCollection).insertOne(school, (err, result) => {
           if (err) {
             return res.status(500).json({
@@ -116,7 +99,5 @@ router.post('/add', (req, res) => {
   }
 
 });
-
-
 
 module.exports = router;
