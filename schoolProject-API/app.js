@@ -1,13 +1,22 @@
+const express = require('express');
+const bodyParser = require("body-parser");
+const db = require("./Repository/db-config");
+const PORT = process.env.PORT || 3001;
+
 var createError = require('http-errors');
-var express = require('express');
+var cors = require('cors');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 
-var app = express();
+
+//Install Express
+const app = express();
+
+// parses json data sent to us by the user
+app.use(bodyParser.json());
+app.use(cors());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -19,10 +28,23 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+let schoolRouter = require('./routes/school-controller');
+app.use('/schools', schoolRouter);
 
-// catch 404 and forward to error handler
+//setting up db connection
+db.connect((err)=>{
+  if(err){
+    console.log('unable to connect to database',err);
+    process.exit(1);
+  }
+  else{
+    app.listen(PORT, () =>
+        console.log(`connected to database, Listening on ${ PORT }`)
+    );
+  }
+});
+
+//catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
@@ -37,5 +59,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;
